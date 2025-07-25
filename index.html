@@ -2446,7 +2446,7 @@
                         <div class="input-group">
                             <label for="hours-per-week">Hours spent per week on admin tasks:</label>
                             <div class="slider-container">
-                                <input type="range" id="hours-per-week" min="5" max="15" value="10" oninput="updateCalculator()">
+                                <input type="range" id="hours-per-week" min="1" max="15" value="10" oninput="updateCalculator()">
                                 <span class="slider-value" id="hours-value">10 hours</span>
                             </div>
                         </div>
@@ -3719,7 +3719,7 @@ Submitted: ${formData.timestamp}
 
             // Update slider displays with proper formatting
             document.getElementById('hours-value').textContent = 
-                hoursPerWeek == 5 ? '<5 hours' : (hoursPerWeek == 15 ? '15+ hours' : hoursPerWeek + ' hours');
+                hoursPerWeek == 1 ? '<1 hour' : (hoursPerWeek == 15 ? '15+ hours' : hoursPerWeek + ' hours');
             document.getElementById('rate-value').textContent = 
                 hourlyRate == 200 ? '$200+/hour' : '$' + hourlyRate + '/hour';
             document.getElementById('quotes-value').textContent = 
@@ -3753,10 +3753,17 @@ Submitted: ${formData.timestamp}
             document.getElementById('weekly-hours').textContent = Math.round(totalWeeklySavings);
             document.getElementById('monthly-revenue').textContent = '$' + Math.round(monthlyRevenue).toLocaleString();
             document.getElementById('annual-impact').textContent = '$' + Math.round(annualRevenue).toLocaleString();
+            
+            // Calculate and update annual hours dynamically
+            const annualHours = Math.round(totalWeeklySavings * 52);
+            document.getElementById('final-annual-hours').textContent = annualHours + ' hours';
+            document.getElementById('computer-hours-cta-title').textContent = annualHours + ' hours';
+            document.getElementById('computer-hours-cta').textContent = annualHours + ' hours';
 
             // Store enhanced data for later use
             window.calculatorData = {
                 weeklySavings: Math.round(totalWeeklySavings),
+                annualHours: annualHours, // Store the exact same calculation
                 monthlyRevenue: Math.round(monthlyRevenue),
                 annualRevenue: Math.round(annualRevenue),
                 adminSavings: Math.round(adminSavingsPerWeek),
@@ -3785,16 +3792,16 @@ Submitted: ${formData.timestamp}
 
             // Populate enhanced results with current calculator data
             document.getElementById('final-name').textContent = 'Builder'; // Default name since no form
-            document.getElementById('final-annual-hours').textContent = (window.calculatorData.weeklySavings * 52) + ' hours';
+            const annualHours = window.calculatorData.annualHours; // Use stored calculation
+            document.getElementById('final-annual-hours').textContent = annualHours + ' hours';
             document.getElementById('final-annual').textContent = '$' + window.calculatorData.annualRevenue.toLocaleString();
             document.getElementById('efficiency-multiplier').textContent = window.calculatorData.efficiencyMultiplier + 'x';
-            document.getElementById('savings-amount').textContent = (window.calculatorData.weeklySavings * 52) + ' hours';
+            document.getElementById('savings-amount').textContent = annualHours + ' hours';
 
-            // Update choice-based CTA with dynamic values
-            const hoursOfAdminWork = window.calculatorData.weeklySavings * 52; // Total hours that would be saved annually
-            const weeksOfLifeBack = Math.round(window.calculatorData.weeklySavings * 52 * 3 / 40);
-            document.getElementById('computer-hours-cta').textContent = Math.round(hoursOfAdminWork) + ' hours';
-            document.getElementById('computer-hours-cta-title').textContent = Math.round(hoursOfAdminWork) + ' hours';
+            // Update choice-based CTA with dynamic values (use same calculation as annualHours)
+            document.getElementById('computer-hours-cta').textContent = annualHours + ' hours';
+            document.getElementById('computer-hours-cta-title').textContent = annualHours + ' hours';
+            const weeksOfLifeBack = Math.round(annualHours * 3 / 40);
             document.getElementById('life-weeks-cta').textContent = Math.max(weeksOfLifeBack, 1) + ' weeks';
 
             // Calculate and display tradie equivalents
@@ -3824,10 +3831,10 @@ Submitted: ${formData.timestamp}
             // Calculate equivalents with correct formulas
             const beerHours = Math.round(data.weeklySavings * 4.33); // Hours per month saved
             const piesPerYear = Math.floor(data.annualRevenue / piePrice); // Annual growth potential / $5, rounded down
-            const fishingHoursPerYear = Math.round(data.weeklySavings * 52); // Total hours saved per year
+            const fishingHoursPerYear = data.annualHours; // Use stored annual hours calculation
             const weeklySavingsForEnjoyment = Math.round(data.annualRevenue / 52); // Annual growth potential / 52 weeks
             const worldFlights = Math.floor(data.annualRevenue / worldFlightCost); // Annual growth potential / $6000, rounded down
-            const weeksOfLifeBack = Math.round((data.weeklySavings * 52 * 3) / 40); // (Hours saved per year * 3 years) / 40 hours per week
+            const weeksOfLifeBack = Math.round((data.annualHours * 3) / 40); // (Hours saved per year * 3 years) / 40 hours per week
             
             console.log('Calculated values:', {
                 beerHours, piesPerYear, fishingHoursPerYear, weeklySavingsForEnjoyment, worldFlights, weeksOfLifeBack
